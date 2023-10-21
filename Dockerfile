@@ -4,7 +4,8 @@ ARG SOLC=0.5.12
 # install basic packages
 RUN apt-get update && apt-get install -y\
     software-properties-common\
-    locales
+    locales\
+    git
 
 # set correct locale
 RUN locale-gen en_US.UTF-8
@@ -45,7 +46,8 @@ ENV PYTHONPATH /sec
 # install securify requirements
 RUN python3.7 setup.py install && python3.7 -m pip install --user -r /requirements.txt && python3.7 -m pip install requests
 
-RUN cd /sec/securify/staticanalysis/libfunctors/ && ./compile_functors.sh
+# RUN cd /sec/securify/staticanalysis/libfunctors/ && ./compile_functors.sh
+RUN cd /sec/securify/staticanalysis/libfunctors/ && g++ -fPIC -o functors.o -c functors.cpp && g++ -shared -o libfunctors.so functors.o && rm functors.o
 
 RUN cd /sec/securify/staticanalysis/souffle_analysis && \
         souffle --dl-program=../dl-program \
